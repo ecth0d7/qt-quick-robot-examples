@@ -8,3 +8,5 @@
 - 其他图片：本机 Qt Creator 19.0.2、Qt 6.11.1、Qt Online Installer / Maintenance Tool 4.11.0 和仓库示例程序。`13`、`14`、`15` 开头的图片展示演示副本将圆角从 12 改为 24 后的效果。
 
 截图仅用于说明工具操作与示例行为；Qt、GitHub 等名称和标识归各自权利人所有。
+
+新增的 `11a-help-plugins.png`、`11b-enable-designer.png`、`11c-restart-designer.png` 为本机 Qt Creator 19.0.2 的帮助菜单、插件载入选项和重启提示实拍截图，使用独立的演示配置截取。

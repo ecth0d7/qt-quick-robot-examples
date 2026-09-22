@@ -317,9 +317,63 @@ qt-quick-robot-examples/
 
 在 Qt Creator 的 Qt Quick Designer，或 Qt Design Studio 中打开设计工程，再选择 `RobotPanelForm.ui.qml` 进入 **Design / 设计** 模式。`.ui.qml` 用于支持可视化编辑的表单。[Qt 官方：UI 文件](https://doc.qt.io/qtcreator/creator-quick-ui-forms.html)
 
-如果 Creator 中没有设计视图，检查插件或扩展列表中的 Qt Quick Designer 是否启用；按工具提示重启。若当前安装包没有该功能，可使用 Qt Design Studio 打开相同的 `.qmlproject`。
+如果 Design / 设计为灰色，或没有设计入口，先按下面的流程检查当前文件和 Qt Quick Designer 插件。
 
 打开 `.qmlproject` 后，可以在项目树找到 `RobotPanelForm.ui.qml`。选中它并点击左侧“设计”，即可进入下图所示的编辑界面。
+
+#### 4.1.1 Design / 设计为灰色时：先检查当前文件
+
+Design 是否可用与当前打开的文件有关。先在项目树中双击 `RobotPanelForm.ui.qml`，让它成为中央编辑区的当前文件，再检查左侧“设计”。只停留在 `CMakeLists.txt`、`.cpp` 或 `.qmlproject` 的文本页面，并不代表已经打开可视化表单。
+
+如果选中 `.ui.qml` 后仍然灰色，或根本没有设计入口，再按下面的流程启用插件。
+
+#### 4.1.2 从“帮助 → 关于插件”启用 QML 设计器
+
+1. 保存正在编辑的文件。
+2. 在 Qt Creator 顶部菜单点击 **帮助（Help）→ 关于插件（About Plugins）**。macOS 的入口通常在 **Qt Creator → About Plugins**。
+
+![Qt Creator 帮助菜单中的关于插件入口](images/11a-help-plugins.png)
+
+图 12A：点击“关于插件”，进入插件管理窗口。
+
+3. 在顶部过滤框输入 **`qml`**，查找 **QmlDesigner / Qt Quick Designer**。如果没有结果，清空搜索框，改搜 **`designer`** 或 **`Qt Quick`**。本机 Qt Creator 19.0.2 显示的名称是 **Qt Quick Designer (deprecated)**，搜索 `designer` 可以找到它；`deprecated` 表示该功能已被标记为弃用，本机版本仍可启用。
+4. 勾选该行 **载入（Load）** 列的复选框。若弹出依赖插件提示，确认一并启用。**用于 QML 表单的是 Qt Quick Designer；Qt Widgets Designer 对应的是另一种 `.ui` 文件。** QML Preview、QML Profiler 等也不是这个可视化编辑器，无需把所有含 QML 的插件都勾上。
+
+![插件管理窗口搜索 designer，并勾选 Qt Quick Designer 的载入选项](images/11b-enable-designer.png)
+
+图 12B：Qt Quick 分组下的 Qt Quick Designer 已勾选“载入”。插件的显示名称与内部名称 `QmlDesigner` 可能不同。
+
+5. 点击 **确定（OK）**，在提示中选择 **Restart Now / 立即重启**。如果选择 Later / 稍后，需要自行完全退出并重新启动 Qt Creator，插件设置才会生效。
+
+![Qt Creator 提示插件变更在重启后生效](images/11c-restart-designer.png)
+
+图 12C：点击 Restart Now 重启工具。仅关闭并重新打开 QML 文件不能代替重启。
+
+6. 重启后打开 `qt_classroom/02_robot_panel/RobotPanel.qmlproject`，再双击 `RobotPanelForm.ui.qml`，点击左侧 **Design / 设计**。
+7. 确认能看到对象树、2D 画布和属性面板，再进行后面的圆角修改操作。
+
+以上插件管理入口、载入选项和重启要求可参见 [Qt 官方：启用与禁用插件](https://doc.qt.io/qtcreator/creator-how-to-enable-plugins.html)。
+
+#### 4.1.3 仍然打不开时，按现象处理
+
+| 现象 | 处理方式 |
+| --- | --- |
+| 搜索 `qml` 没找到设计器 | 改搜 `designer`，查找 Qt Quick Designer；不要仅凭搜索词判断插件不存在 |
+| 已勾选，但设计仍为灰色 | 完全重启 Creator，并确认当前文件是 `RobotPanelForm.ui.qml` |
+| 插件显示加载错误 | 选中插件查看“错误详情（Error Details）”和依赖信息；按错误修复对应 Creator 安装或依赖 |
+| 所有搜索词都找不到 Qt Quick Designer | 当前 Creator 安装可能未提供该插件，可使用下面的 Qt Design Studio 入口 |
+| 打开表单却启动外部工具 | 检查“首选项 → Qt Quick → QML/JS Editing”中的 `Open .ui.qml files with` 设置，确认使用的是哪一个编辑器 |
+| 可以进入设计模式，但画布报错 | 检查缺失的 QML 模块、导入路径和表单语法；这属于表单加载问题，继续勾选插件通常无效 |
+
+#### 4.1.4 其他可视化入口
+
+**从完整 CMake 工程进入：** 也可以打开 `qt_classroom/02_robot_panel/CMakeLists.txt`，配置桌面 Kit 后，在项目树或资源清单中找到 `RobotPanelForm.ui.qml`，打开它并切换到“设计”。本例仍建议先用 `.qmlproject` 熟悉独立表单编辑。
+
+**使用 Qt Design Studio：** 安装并启动 Qt Design Studio，选择“打开项目”，打开同一个 `qt_classroom/02_robot_panel/RobotPanel.qmlproject`，再选择 `RobotPanelForm.ui.qml` 编辑。完整 C++ 程序仍通过 Qt Creator 的 CMake 工程构建和运行。
+
+如果已经安装 Qt Design Studio，还可以在 Creator 的项目树中右键点击 `.ui.qml`，选择 **Open With / 打开方式 → Qt Design Studio**；部分版本也可在 **首选项（Preferences）→ Qt Quick → QML/JS Editing → Open .ui.qml files with** 中选择它。只有安装了对应工具，该入口才能正常使用。[Qt 官方：在 Qt Design Studio 中打开 UI 文件](https://doc.qt.io/qtcreator/creator-how-to-open-files-in-qds.html)、[Qt 官方：UI 文件与打开方式](https://doc.qt.io/qtcreator/creator-quick-ui-forms.html)
+
+**检查结果：** 能选中根矩形，并在属性面板中找到颜色、尺寸和圆角等属性。正式运行程序、预览窗口和可视化编辑是不同操作，单纯运行 `DesignerPreview.qml` 不等于进入可视化编辑器。
 
 ### 4.2 认识设计视图
 
@@ -928,7 +982,8 @@ GUI 操作留在主线程；耗时任务采用异步方式或工作线程，完�
 | 找不到 QtQuick 或 Controls | 是否安装对应模块，是否混用了另一套 Qt 环境 |
 | 改界面没有效果 | 是否保存、重新构建并运行正确的可执行文件 |
 | 新增 QML 组件后找不到类型 | 文件名是否正确；本例的 `.qrc` 是否加入了新文件 |
-| 设计视图报错 | 是否把函数或点击处理写进 `.ui.qml` |
+| Design / 设计为灰色 | 按 4.1.1～4.1.3 检查当前文件、Qt Quick Designer 的载入状态和重启情况 |
+| 设计视图报错 | 是否把函数或点击处理写进 `.ui.qml`，或缺少导入的模块 |
 | required 属性未提供 | 是否误把正式 `main.qml` 当成无后端预览入口 |
 | 血量变量变了，界面不更新 | 是否发出 `healthChanged`；是否覆盖了原绑定 |
 | 布局异常 | 是否让 Layout 与 anchors 同时控制同一个子控件 |
