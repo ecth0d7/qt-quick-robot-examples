@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>RobotPanel.qml</file>
+        <file>RobotPanelForm.ui.qml</file>
+    </qresource>
+</RCC>

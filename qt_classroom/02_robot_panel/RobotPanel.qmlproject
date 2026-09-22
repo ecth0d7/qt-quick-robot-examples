@@ -1,0 +1,8 @@
+import QmlProject 1.1
+
+Project {
+    mainFile: "DesignerPreview.qml"
+    mainUiFile: "RobotPanelForm.ui.qml"
+    QmlFiles { directory: "." }
+    qt6Project: true
+}
