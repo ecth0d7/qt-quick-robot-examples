@@ -69,9 +69,13 @@ Qt 有不同的界面开发方式。本文使用 **Qt Quick + QML**，适合以�
 
 确认自己的操作系统、处理器架构，以及准备安装的 Qt 版本。示例代码要求 **Qt 6.5 或更新版本、C++17、CMake 3.21 或更新版本**；现有示例已在 Linux、Qt 6.11.1、GCC 环境验证。
 
+这里的 Qt 版本指 Kit 使用的开发库版本，与 Qt Creator 自身的版本不同。Qt 6.5 是源码声明的最低要求，并不表示已经逐个测试所有 Qt 6 版本；本次复现环境和未覆盖的平台见 [复现检查报告](docs/REPRODUCIBILITY.md)。
+
 选择满足示例要求的 Qt 6 桌面版本及匹配工具链。具体可安装版本以在线安装器显示为准，不必为了入门同时安装多个版本。
 
 Qt 安装位置可按本机情况选择，示例没有写死 Qt 的安装路径。
+
+Linux 还应检查发行版和系统库版本。以本例使用的 Qt 6.11 官方 x86_64 二进制包为例，需要 glibc 2.34 或更新版本；不能仅凭“都是 Linux”就认为旧系统或 ARM 设备能使用同一安装包。先对照所选版本的 [Qt 官方 Linux 支持表](https://doc.qt.io/qt-6/linux.html)，再选择对应架构和工具链。
 
 ### 2.2 从官网下载在线安装器
 
@@ -107,7 +111,7 @@ chmod +x ./qt-online-installer.run
 
 `--mirror` 后填写镜像的 Qt 根地址，使用上面的 `https://mirrors.ustc.edu.cn/qtproject` 即可，不要追加 `/online/qtsdkrepository/...`。此参数用于开源组件的元数据与下载源，账号登录仍按安装器提示进行。[Qt 官方：指定镜像](https://doc.qt.io/qt-6/get-and-install-qt-cli.html#selecting-mirror-for-opensource)
 
-若镜像暂时不可用，退出安装器，去掉 `--mirror` 及其后的地址重新启动，恢复默认下载方式。
+若镜像暂时不可用，退出安装器，去掉 `--mirror` 及其后的地址重新启动，恢复默认下载方式。镜像不能代替 Qt Account 登录，也不保证账号服务的连接速度。中科大镜像主要同步仍在维护的版本；找不到旧版本或组件下载失败时，先核对版本是否在镜像范围内，再尝试默认源。不要把博客里的某个版本仓库子目录直接替换为 `--mirror` 地址。[中科大镜像范围与参数说明](https://mirrors.ustc.edu.cn/help/qtproject.html)
 
 ![带镜像参数启动后的 Qt 在线安装器欢迎页](images/03-installer-welcome.png)
 
@@ -122,9 +126,10 @@ Linux 的编译器等开发工具一般由系统提供。Ubuntu / Debian 系统�
 ```bash
 sudo apt update
 sudo apt install build-essential gdb cmake ninja-build libgl1-mesa-dev
+sudo apt install libxcb-cursor0 libxkbcommon-x11-0
 ```
 
-这是基础工具和 OpenGL 开发依赖，具体系统可能还需补充图形运行库。遇到缺库提示时，按所选 Qt 版本与发行版的要求补齐。[Qt 官方：Linux 开发环境](https://doc.qt.io/qt-6/linux.html)
+上面包含基础构建工具、OpenGL 开发依赖和常见的 XCB 运行依赖，并非所有发行版的完整依赖清单。Ubuntu / Debian 的精简系统可能还缺其他图形库；遇到 `xcb` 错误时按第 10.2 节查看具体缺失项。只通过 SSH 登录且没有图形显示服务时，即使安装了库也不能直接显示窗口。[Qt 官方：Linux 开发环境](https://doc.qt.io/qt-6/linux.html)
 
 ### 2.4 选择安装位置和组件
 
@@ -144,6 +149,8 @@ sudo apt install build-essential gdb cmake ninja-build libgl1-mesa-dev
 Qt Quick 等能力可能已经包含在所选桌面 Qt 包中，不一定各有一个同名复选框。关键是后续能找到示例所需模块。
 
 **Windows：** 如果采用 MinGW，选择对应的 Qt MinGW 桌面包及匹配的 MinGW 编译工具；如果采用 MSVC，则安装对应的 Visual Studio C++ 工具链并选择 Qt MSVC 包。编译器和 Qt 包要匹配。[Qt 官方：Windows 工具链支持](https://doc.qt.io/qt-6/windows.html)
+
+MinGW 工具链应使用与所选 Qt 包配套的版本；MSVC 工程需要 Visual Studio 的 C++ 桌面开发工具，调试时还需要相应调试器。仅安装 Qt Creator 或 Visual Studio Code 不会自动补齐这些组件。[Qt 官方：编译器配置](https://doc.qt.io/qtcreator/creator-tool-chains.html)
 
 **Linux：** 通常选择对应架构的 GCC 桌面包，并使用系统安装的 GCC。不要选择交叉编译到另一种设备的套件作为当前桌面 Kit。
 
@@ -172,6 +179,14 @@ Qt Creator 的工程配置依赖 Kit；打开工程时也可以进入 Kit 设置
 ![Qt Creator 的桌面 Kit 设置，包含 GCC、GDB、Qt 版本与 CMake](images/06-kit.png)
 
 图 6：在构建套件列表中选中 Desktop Qt，检查下方的编译器、调试器、Qt 版本和 CMake。图中的 Python Kit 与这两个示例无关。
+
+**没有自动检测到桌面 Kit 时：**
+
+1. 打开“首选项 / 选项 → Kits”，在 Qt Versions / Qt 版本页选择“添加”，定位到所安装桌面 Qt 的 `bin/qmake`（Windows 为 `qmake.exe`）。不要选 Creator 自身目录里的工具。
+2. 检查 Compilers / 编译器、Debuggers / 调试器、CMake 页面；补齐没有自动识别的工具。
+3. 在 Kits 页添加桌面 Kit，关联刚才的 Qt 版本、匹配编译器、调试器和 CMake，再回到工程配置页选择它。
+
+系统中存在多个 Qt 时，检查 Kit 指向的实际路径；不要把 GCC、MinGW、MSVC 或不同架构的库混在同一个 Kit 中。[Qt 官方：添加 Kit](https://doc.qt.io/qtcreator/creator-targets.html)
 
 如果漏装了组件，打开 Qt 安装目录中的 **Maintenance Tool / 维护工具**，添加或移除对应组件即可。[Qt 官方：维护已安装组件](https://doc.qt.io/qt-6/qt-online-installation.html)
 
@@ -248,7 +263,7 @@ qt-quick-robot-examples/
         └── RobotPanel.qmlproject
 ```
 
-文中的工程路径均相对于仓库根目录；第 5、6 章源码标题中的 `01_hello/` 和 `02_robot_panel/` 相对于 `qt_classroom/`。后面的完整构建命令从仓库根目录执行，第 2 章安装器命令则在安装器所在目录执行。
+文中的工程路径均相对于仓库根目录；第 5、6 章源码标题中的 `01_hello/` 和 `02_robot_panel/` 相对于 `qt_classroom/`。第 5.2、6.1 节的第一组构建命令分别从仓库根目录的新终端执行；如果上一组命令已经进入某个示例目录，先回到仓库根目录。第 2 章安装器命令则在安装器所在目录执行。
 
 通过 ZIP 下载时，目录名可能带有 `-main` 后缀；进入实际解压目录即可，内部相对路径不变。只复制单个 `.qml` 文件无法获得完整 C++ 工程，应下载整个仓库。
 
@@ -364,6 +379,25 @@ Design 是否可用与当前打开的文件有关。先在项目树中双击 `Ro
 | 所有搜索词都找不到 Qt Quick Designer | 当前 Creator 安装可能未提供该插件，可使用下面的 Qt Design Studio 入口 |
 | 打开表单却启动外部工具 | 检查“首选项 → Qt Quick → QML/JS Editing”中的 `Open .ui.qml files with` 设置，确认使用的是哪一个编辑器 |
 | 可以进入设计模式，但画布报错 | 检查缺失的 QML 模块、导入路径和表单语法；这属于表单加载问题，继续勾选插件通常无效 |
+
+**程序能运行，设计器却报 `QML module not found` 时：**
+
+本次使用全新 Creator 配置复现时，启用插件后遇到了 `QtQuick.Controls`、`QtQuick.Layouts` 的识别错误。随后重启工具可以进入画布，但一度出现背景不完整；重置代码模型并重新进入设计模式后恢复了正常显示。建议按以下顺序排查：
+
+1. 在“项目”设置中确认 `.qmlproject` 使用正确的桌面 Qt Kit；先确认完整 CMake 工程能构建并运行。
+2. 切到编辑模式，点击 **工具（Tools）→ QML/JS → 重置代码模型（Reset Code Model）**。
+3. 等待底部的 QML 扫描和解析进度结束，再重新打开 `RobotPanelForm.ui.qml`，切回“设计”。必要时关闭并重新打开项目或完全重启 Creator。
+4. 如果仍然报错，查看错误中的导入路径是否属于当前 Kit 的 Qt，检查安装是否包含对应模块。实际缺失的模块需要补装，重置索引不能代替安装。
+
+![工具菜单中的 QML/JS 重置代码模型入口](images/11d-reset-qml-model.png)
+
+图 12D：本机复现时使用的重置入口，用于让 Creator 重新识别 QML 类型。
+
+![全新配置在重置代码模型并重新进入设计模式后正常显示表单](images/11e-designer-recovered.png)
+
+图 12E：处理后可看到完整背景、血量、按钮和对象树；随后已验证属性面板修改圆角能写回源码。
+
+这是本次环境的实测处理过程，不代表所有模块错误的原因都相同。Qt 官方也将构建后重置代码模型列为模块识别错误的排查方法：[Qt 官方：重置代码模型](https://doc.qt.io/qtcreator/creator-reference-js-and-qml-error-codes.html#resetting-the-code-model)。
 
 #### 4.1.4 其他可视化入口
 
@@ -543,7 +577,9 @@ cmake --build build -j 4
 ./build/hello_qt
 ```
 
-Qt 的安装位置按本机环境配置。若切换 Qt 版本或编译器，使用新的构建目录，例如把上述命令中的 `build` 全部改成 `build-new`。
+Qt 的安装位置按本机环境配置。`qt-cmake` 必须来自准备使用的那套桌面 Qt；若不在 PATH 中，可使用它的完整路径，并给包含空格的路径加引号。Linux 可用 `command -v qt-cmake`，PowerShell 可用 `Get-Command qt-cmake*` 检查实际调用位置。PowerShell 执行带引号的程序路径时，需要在前面加 `&`。
+
+Qt Creator 的 Kit 不会自动修改外部终端的 PATH。切换 Qt 版本、编译器或 CMake 生成器时，使用新的构建目录，例如把上述命令中的 `build` 全部改成 `build-new`，避免旧的 CMakeCache 继续引用原工具链。
 
 ### 5.3 逐步解释启动过程
 
@@ -976,6 +1012,8 @@ GUI 操作留在主线程；耗时任务采用异步方式或工作线程，完�
 
 ## 10. 常见问题与调试方法
 
+### 10.1 先按现象定位
+
 | 现象 | 优先检查 |
 | --- | --- |
 | CMake 找不到 Qt6 | Creator 的 Kit 是否正确；外部终端是否配置了对应 Qt |
@@ -993,6 +1031,40 @@ GUI 操作留在主线程；耗时任务采用异步方式或工作线程，完�
 **断点调试：** 在 `RobotState::damage()` 设置断点，以 Debug 启动，点击受击，查看 `amount` 和 `m_health`，再单步进入 `setHealth()`。观察先修改成员、再发出通知的执行顺序。
 
 临时日志可以使用 C++ 的 `qDebug()`（需包含 `<QDebug>`），或普通 QML 事件处理中的 `console.log(...)`。先记录状态变化，避免高频刷屏。
+
+### 10.2 Linux 启动失败：区分缺库、显示连接和渲染问题
+
+若程序提示无法加载 `xcb` 平台插件，在示例目录执行以下命令，查看详细加载日志：
+
+```bash
+QT_DEBUG_PLUGINS=1 ./build/robot_panel
+```
+
+将程序路径替换为自己的实际构建结果。日志若明确指出某个 `.so` 不存在，安装对应发行版软件包；Qt 的 XCB 依赖清单见 [官方 Linux 依赖说明](https://doc.qt.io/qt-6/linux-requirements.html)。若提示 `could not connect to display`，先检查当前桌面会话或 SSH 图形转发；这与“缺少 libxcb-cursor0”不是同一个问题。
+
+若已经能连接桌面，但明确报 OpenGL、RHI 或图形上下文创建失败，可以在当前命令临时使用软件渲染进行诊断：
+
+```bash
+QT_QUICK_BACKEND=software ./build/robot_panel
+```
+
+本例的文字、矩形和基础控件已在该模式下通过交互测试。软件渲染有功能限制，不应据此推断所有 Qt Quick 特效都兼容；也不要把它当作 `QML module not found` 的修复方法。[Qt 官方：软件渲染](https://doc.qt.io/qt-6/qtquick-visualcanvas-adaptations-software.html)
+
+如果中文显示为方框，检查系统是否安装中文字体。Ubuntu / Debian 可安装 `fonts-noto-cjk`，然后重新启动程序。
+
+### 10.3 Windows 运行路径与依赖
+
+本文的 `./build/robot_panel` 是 Linux 示例。Windows 的可执行文件带 `.exe`，MSVC 等多配置生成器还可能放在 `build/Debug/` 或 `build/Release/`；以 Creator 的运行配置为准。终端使用多配置生成器时，构建命令需指定例如 `cmake --build build --config Debug`。
+
+能在 Creator 中运行，但双击复制出去的 `.exe` 提示缺少 Qt DLL，属于部署依赖问题。发布程序时使用同一套 Qt 提供的 `windeployqt`，并让它扫描 QML 源码依赖；不要从另一套编译器或 Qt 版本中随意复制 DLL。[Qt 官方：Windows 部署](https://doc.qt.io/qt-6/windows-deployment.html)
+
+### 10.4 什么时候考虑重装
+
+先依次确认当前文件、Kit、插件载入、代码模型、构建缓存和系统依赖。只有安装文件缺失、维护工具报告组件损坏，或需要换一套明确兼容的工具组合时，再考虑修复或重装。
+
+重装前备份源码和需要保留的设置；用 Maintenance Tool 管理 Qt 组件，保留源码目录。重新安装后重新检查 Kit，并使用新的构建目录。Creator 用户设置、项目个人设置和构建缓存可能独立于 Qt 安装目录，卸载开发库不等于它们都会被清空。本次检查使用了新的源码副本、构建目录和独立 Creator 配置，没有卸载现有 Qt，也没有把结果描述为全新系统安装验证。
+
+详细实测项目、自动化检查命令、帖子交叉核对以及尚未验证的平台见 [复现检查报告](docs/REPRODUCIBILITY.md)。
 
 ## 11. 扩展练习与常见问答
 

@@ -10,3 +10,5 @@
 截图仅用于说明工具操作与示例行为；Qt、GitHub 等名称和标识归各自权利人所有。
 
 新增的 `11a-help-plugins.png`、`11b-enable-designer.png`、`11c-restart-designer.png` 为本机 Qt Creator 19.0.2 的帮助菜单、插件载入选项和重启提示实拍截图，使用独立的演示配置截取。
+
+`11d-reset-qml-model.png` 与 `11e-designer-recovered.png` 是 2026-09-22 使用全新 Creator 用户配置进行复现检查时的实际截图，分别显示代码模型重置入口和恢复后的表单。

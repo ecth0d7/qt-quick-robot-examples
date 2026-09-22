@@ -29,7 +29,7 @@ cd qt-quick-robot-examples
 - CMake 3.21 或更新版本。
 - Qt Creator；可视化编辑使用 Qt Quick Designer 或 Qt Design Studio。
 
-示例曾在 Linux / Qt 6.11.1 / GCC 环境完成构建与界面数据更新验证。
+已在 Ubuntu 22.04.5 / Qt 6.11.1 / GCC 11.4 中使用新下载源码完成构建、按钮交互、缩放与 QML 重建验证。详见 [复现检查报告及测试命令](docs/REPRODUCIBILITY.md)；Windows 等其他环境尚未实机覆盖。
 
 ## 打开与运行
 
@@ -54,6 +54,8 @@ cmake --build build-panel -j 4
 ## 可视化编辑
 
 打开 [RobotPanel.qmlproject](qt_classroom/02_robot_panel/RobotPanel.qmlproject)，在设计模式编辑 [RobotPanelForm.ui.qml](qt_classroom/02_robot_panel/RobotPanelForm.ui.qml)。
+
+如果 Design 为灰色或报模块找不到，按 [教程第 4.1 节](Qt入门教程.md#41-选对入口) 检查当前文件、插件、Kit，并在需要时重置 QML 代码模型。
 
 `DesignerPreview.qml` 使用静态数据；完整应用由 C++ 提供血量并处理操作。两条路径使用同一份表单。修改界面后保存，再构建并重启完整应用。
 
