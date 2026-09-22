@@ -4,7 +4,7 @@
 
 示例使用本地模拟的机器人血量，无需机器人或服务器。第 5、6 章包含全部源码，源码获取方式见第 3 章，下载后可直接打开工程。
 
-> 文中的截图位置预留待补充。图片可放在本文同级的 `images/` 目录，并使用相对路径引用。安装器和 IDE 的菜单文字可能随版本、语言变化，以实际界面为准。
+> 本文配有实际操作截图，主要环境为 Linux、Qt 6.11.1、Qt Creator 19.0.2 和 Qt Online Installer 4.11.0。安装选项图引用 Qt 官方文档，并单独注明来源。图片保存在同级 `images/` 目录，使用相对路径；可打开图片查看原始尺寸。截图中的临时工作目录仅用于演示，实际操作使用自己的源码目录。菜单文字和控件样式可能随版本、系统变化。
 
 ## 1. Qt 是什么，可以用来做什么
 
@@ -27,7 +27,9 @@
 
 这些是应用设计示例。真正接入设备时，还需要实现对应的通信协议和业务逻辑。下面通过示例说明界面与数据之间的联系。
 
-> **截图位 01｜成品效果预览：** 机器人血量面板的运行效果，标出标题、血量、进度条和按钮。
+![机器人状态面板运行效果：500 点血量、进度条及受击恢复按钮](images/01-robot-panel.png)
+
+图 1：机器人状态面板的初始状态。血量文字、进度条和两个按钮都来自后文的小工程。
 
 ### 1.3 Qt、Qt Creator 和 QML 分别是什么
 
@@ -78,9 +80,9 @@ Qt 安装位置可按本机情况选择，示例没有写死 Qt 的安装路径�
 3. 下载 **Qt Online Installer**。这是用于选择并下载 Qt 组件的安装程序。
 4. 按官网提示注册或登录 Qt Account，并完成邮箱验证。[Qt 官方下载与账号步骤](https://www.qt.io/development/download-qt-installer-oss)
 
-> **截图位 02｜下载页面：** 标出系统与架构选择、在线安装器下载按钮。
->
-> **截图位 03｜账号与安装器欢迎页：** 展示登录入口，截图中不要包含账号密码等个人信息。
+![Qt 官方下载页选中 Linux x64](images/02-qt-download.png)
+
+图 2：先选择操作系统和架构，再点击下方的 Qt Online Installer 下载按钮。Windows 选择 Windows x64 等对应项。
 
 ### 2.3 使用镜像启动安装器
 
@@ -107,7 +109,13 @@ chmod +x ./qt-online-installer.run
 
 若镜像暂时不可用，退出安装器，去掉 `--mirror` 及其后的地址重新启动，恢复默认下载方式。
 
-> **截图位 03A｜带镜像启动：** 展示终端中的完整命令，以及启动后的安装器窗口。
+![带镜像参数启动后的 Qt 在线安装器欢迎页](images/03-installer-welcome.png)
+
+图 3：执行上述带 `--mirror` 参数的命令后，仍会打开图形安装器。镜像参数在启动命令中指定，不会显示为欢迎页中的选项。
+
+![Qt 安装器的账号登录页面，账号和密码字段为空](images/03b-installer-login.png)
+
+图 4：点击 Next 后进入账号登录页；没有账号时可使用 Sign up 入口注册。
 
 Linux 的编译器等开发工具一般由系统提供。Ubuntu / Debian 系统可先安装基础构建工具；以下是该类系统的安装命令，不用于 Windows：
 
@@ -139,9 +147,9 @@ Qt Quick 等能力可能已经包含在所选桌面 Qt 包中，不一定各有�
 
 **Linux：** 通常选择对应架构的 GCC 桌面包，并使用系统安装的 GCC。不要选择交叉编译到另一种设备的套件作为当前桌面 Kit。
 
-> **截图位 04｜安装位置：** 标出安装目录，路径按本机情况选择。
->
-> **截图位 05｜组件选择：** 标出一个 Qt 6 桌面包、Qt Creator、匹配工具链和构建工具。Windows、Linux 可以分别补图。
+![Qt 官方文档中的安装目录与桌面开发选项](images/04-install-options-official.png)
+
+图 5：上方输入安装目录，中间选择桌面开发，底部 Custom Installation 可进入自定义组件选择。此图是从 [Qt 官方安装文档](https://doc.qt.io/qt-6/qt-online-installation.html) 的示例图截取的参考图，展示 Windows 和 Qt 6.9；它用于说明选项位置，版本与路径按实际环境选择。
 
 按提示阅读安装条款、确认选择并等待安装完成。首次安装需要联网下载组件。
 
@@ -161,9 +169,15 @@ Kit 可以理解成“这次用哪套工具来构建程序”。核对下面几�
 
 Qt Creator 的工程配置依赖 Kit；打开工程时也可以进入 Kit 设置检查。具体设置入口参见 [Qt 官方：打开和配置工程](https://doc.qt.io/qtcreator/creator-project-opening.html)。
 
-> **截图位 06｜Kit 检查：** 标出 Qt 版本、编译器、CMake 和 Kit 状态。
+![Qt Creator 的桌面 Kit 设置，包含 GCC、GDB、Qt 版本与 CMake](images/06-kit.png)
+
+图 6：在构建套件列表中选中 Desktop Qt，检查下方的编译器、调试器、Qt 版本和 CMake。图中的 Python Kit 与这两个示例无关。
 
 如果漏装了组件，打开 Qt 安装目录中的 **Maintenance Tool / 维护工具**，添加或移除对应组件即可。[Qt 官方：维护已安装组件](https://doc.qt.io/qt-6/qt-online-installation.html)
+
+![Qt Maintenance Tool 的添加移除、更新和卸载选项](images/05a-maintenance.png)
+
+图 7：维护工具中的 Add or remove components 用于补装或移除组件，Update components 用于更新；若工具要求先更新自身，按其提示处理。
 
 后续补装或更新组件时，也可给维护工具传入同样的镜像参数。在 Qt 安装目录中打开终端，按实际文件名执行；下面以 `MaintenanceTool` 为例：
 
@@ -214,6 +228,7 @@ cd qt-quick-robot-examples
 qt-quick-robot-examples/
 ├── README.md
 ├── Qt入门教程.md
+├── images/                  本文配图
 └── qt_classroom/
     ├── 01_hello/
     │   ├── CMakeLists.txt
@@ -237,7 +252,9 @@ qt-quick-robot-examples/
 
 通过 ZIP 下载时，目录名可能带有 `-main` 后缀；进入实际解压目录即可，内部相对路径不变。只复制单个 `.qml` 文件无法获得完整 C++ 工程，应下载整个仓库。
 
-> **截图位 06A｜获取源码：** 展示 GitHub 仓库中的 Code 菜单和 Download ZIP 入口。
+![示例 GitHub 仓库的 Code 菜单与 Download ZIP 入口](images/06a-github-download.png)
+
+图 8：Code 菜单中可以复制 HTTPS 克隆地址，也可以点击 Download ZIP 下载完整源码。
 
 ### 3.2 打开完整工程
 
@@ -249,9 +266,13 @@ qt-quick-robot-examples/
 
 这里要打开工程配置文件，单独打开 `main.cpp` 只能编辑代码，不能代替完整的构建配置。[Qt 官方：打开项目](https://doc.qt.io/qtcreator/creator-project-opening.html)
 
-> **截图位 07｜打开工程：** 标出选中的 `01_hello/CMakeLists.txt`。
->
-> **截图位 08｜首次配置：** 标出 Kit、Debug、构建目录和配置按钮。
+![文件选择窗口中选中 CMakeLists.txt](images/07-open-project.png)
+
+图 9：打开项目时选择 `01_hello/CMakeLists.txt`，然后点击右下角的打开按钮。图中的 `build` 和 `.qtcreator` 是本机配置后产生的目录。
+
+![Qt Creator 首次项目配置，已选择桌面 Qt 和 Debug](images/08-configure-project.png)
+
+图 10：勾选桌面 Qt Kit 和 Debug，确认构建目录，再点击右下角 Configure Project。
 
 ### 3.3 认识 Creator 的几个区域
 
@@ -266,7 +287,9 @@ qt-quick-robot-examples/
 | Application Output / 应用程序输出 | 查看程序运行日志 |
 | Issues / 问题 | 集中查看错误和警告 |
 
-> **截图位 09｜Creator 主界面：** 用编号标出文件树、编辑区、构建、运行和输出区域。
+![Qt Creator 显示 main.qml 源码和构建成功输出](images/09-creator-editor.png)
+
+图 11：左侧为项目文件树，中间为源码，底部为编译输出；左下方的绿色三角形用于运行，锤子图标用于构建。输出中的 `Built target hello_qt` 表示目标已构建完成。
 
 ### 3.4 构建并运行
 
@@ -274,7 +297,9 @@ qt-quick-robot-examples/
 
 第一次先不修改代码。能成功运行，说明 Qt 库、编译器和工程配置已经基本配合起来。若失败，先从问题面板和编译输出找到第一条有效错误。
 
-> **截图位 10｜首次运行结果：** 展示 Hello 窗口，并标注当前运行目标为 `hello_qt`。
+![hello_qt 程序显示 Hello RoboMaster](images/10-hello.png)
+
+图 12：`hello_qt` 实际运行结果。
 
 **检查结果：** 工程配置成功，运行后显示 Hello 窗口。
 
@@ -294,7 +319,7 @@ qt-quick-robot-examples/
 
 如果 Creator 中没有设计视图，检查插件或扩展列表中的 Qt Quick Designer 是否启用；按工具提示重启。若当前安装包没有该功能，可使用 Qt Design Studio 打开相同的 `.qmlproject`。
 
-> **截图位 11｜设计入口：** 展示 `RobotPanel.qmlproject`、选中的 `.ui.qml` 文件，以及设计模式入口。
+打开 `.qmlproject` 后，可以在项目树找到 `RobotPanelForm.ui.qml`。选中它并点击左侧“设计”，即可进入下图所示的编辑界面。
 
 ### 4.2 认识设计视图
 
@@ -307,7 +332,9 @@ qt-quick-robot-examples/
 
 可以在对象树或画布选中组件，再修改属性面板中的值。遇到不容易点选的内部控件，优先使用对象树。[Qt 官方：创建和编辑组件实例](https://doc.qt.io/qtcreator/quick-component-instances.html)
 
-> **截图位 12｜设计视图总览：** 标出对象树、画布、属性面板和组件库。
+![Qt Quick Designer 中的机器人表单、对象树、组件库与属性面板](images/12-designer.png)
+
+图 13：左上为对象树，左下为 Components 组件库，中间为 2D 画布，右侧为属性面板。此时选中的是根对象 `root`。
 
 ### 4.3 不写代码，先改一次外观
 
@@ -319,9 +346,17 @@ qt-quick-robot-examples/
 
 预期结果：设计视图和正式程序都显示新的圆角。第一次先改圆角、颜色、字体或间距；面板实际宽度由外层窗口布局决定，改默认 `width` 未必能看出变化。
 
-> **截图位 13｜修改属性：** 标出选中的根对象和 `radius` 输入框。
->
-> **截图位 14｜结果对照：** 展示保存后的设计画布、对应属性代码以及正式运行效果。
+![可视化设计器中将根矩形的 radius 改为 24](images/13-radius-property.png)
+
+图 14：在右侧属性面板向下滚动到 Rectangle 区域，将 Radius 改为 `24`。面板较窄时标签可能缩写为 `Ra...`；画布中的圆角会同步变化。
+
+![设计操作保存后，表单源码出现 radius 24](images/14a-radius-code.png)
+
+图 15：保存后切回代码视图，确认 `radius: 24` 已写入表单。
+
+![重新构建的机器人面板显示 24 像素圆角](images/14b-radius-runtime.png)
+
+图 16：重新构建并启动 C++ 应用后，正式面板也显示更大的圆角。仓库默认源码仍为 `radius: 12`，以上截图展示的是执行本节修改后的结果。
 
 ### 4.4 只看正在修改的面板
 
@@ -807,6 +842,10 @@ flowchart LR
 本例由 C++ 对象管理血量数据。因此点击时调用 `backend.damage(50)`，由 C++ 修改血量。不要改成 `panel.health = 100`：这会覆盖 `health: panel.backend.health` 的绑定，界面可能不再跟随后端。
 
 点击受击按钮后，文字和进度条随血量变化自动更新，无需分别编写刷新代码。
+
+![连续受击后，血量变为 100，文字变色且进度条缩短](images/15-health-change.png)
+
+图 17：在圆角修改后的程序中连续点击八次受击，血量从 500 变为 100。文字颜色和进度条长度随同一份 C++ 状态更新。
 
 ### 7.2 `Q_PROPERTY` 与更新通知
 

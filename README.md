@@ -18,6 +18,10 @@ cd qt-quick-robot-examples
 
 血量由本地模拟产生，无需机器人、网络服务或其他业务工程。
 
+![机器人状态面板运行效果](images/01-robot-panel.png)
+
+教程包含下载安装、Kit 配置、打开工程、可视化编辑及运行结果截图。
+
 ## 开发环境
 
 - Qt 6.5 或更新版本，包含 Core、Gui、Qml、Quick、QuickControls2。
